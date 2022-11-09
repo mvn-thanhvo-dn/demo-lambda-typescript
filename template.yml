@@ -1,0 +1,155 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Lambda application that calls the Lambda API.
+Globals:
+  Function:
+    Runtime: nodejs16.x
+    Timeout: 100
+    MemorySize: 1024
+    Layers:
+      - !Ref LayerNodeModules
+      - !Ref LayerShared
+    Environment:
+      Variables:
+        DB_HOST: 116.105.73.129
+        DB_PORT: 5432
+        DB_USER: hana
+        DB_PASS: Hana08062001!
+        DB_NAME: demo_lambda_2
+        ACCESS_TOKEN_SECRET: hanahaha333
+        ACCESS_TOKEN_LIFE: 5m
+Resources:
+  api:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: api
+      TracingEnabled: true
+      OpenApiVersion: 3.0.2
+  FunctionRegisterUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.registerUser
+      Runtime: nodejs16.x
+      CodeUri: dist/lambdas/user
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Tracing: Active
+      Events:
+        getEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref api
+            Path: /users
+            Method: POST
+  FunctionLogin:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.login
+      Runtime: nodejs16.x
+      CodeUri: dist/lambdas/user
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Tracing: Active
+      Events:
+        getEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref api
+            Path: /login
+            Method: POST
+  FunctionGetAllUsers:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.getAllUsers
+      Runtime: nodejs16.x
+      CodeUri: dist/lambdas/user
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Tracing: Active
+      Events:
+        getEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref api
+            Path: /users
+            Method: GET
+  FunctionGetProfile:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.getProfile
+      Runtime: nodejs16.x
+      CodeUri: dist/lambdas/profile
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Tracing: Active
+      Events:
+        getEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref api
+            Path: /profile
+            Method: GET
+  FunctionUpdateProfile:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.updateProfile
+      Runtime: nodejs16.x
+      CodeUri: dist/lambdas/profile
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Tracing: Active
+      Events:
+        getEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref api
+            Path: /profile
+            Method: PUT
+  FunctionDeleteProfile:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.deleteProfile
+      Runtime: nodejs16.x
+      CodeUri: dist/lambdas/profile
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Tracing: Active
+      Events:
+        getEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref api
+            Path: /profile
+            Method: DELETE
+  LayerNodeModules:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: layer-node_modules
+      Description: Nodejs modules
+      ContentUri: dist/layers/dependencies/
+      CompatibleRuntimes:
+        - nodejs16.x
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+  LayerShared:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: layer-shared
+      Description: Shared module
+      ContentUri: dist/layers/shared/
+      CompatibleRuntimes:
+        - nodejs16.x
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
