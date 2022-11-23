@@ -3,13 +3,6 @@ import { APIGatewayProxyResult } from 'aws-lambda'
 import { plainToInstance } from 'class-transformer'
 
 import { UpdateProfileDto } from './dtos'
-
-// ------------------ import for debug ------------------
-// import { render } from '../../layers/shared/nodejs/node_modules/shared/utils/custom-response'
-// import { ProfileRepository } from '../../layers/shared/nodejs/node_modules/models/repositories'
-// import { APIGatewayEventInterface } from '../../layers/shared/nodejs/node_modules/shared/interfaces'
-
-// ------------------ import for lambda ------------------
 import { render } from 'shared/utils/custom-response'
 import { ProfileRepository } from 'models/repositories'
 import { APIGatewayEventInterface } from 'shared/interfaces'

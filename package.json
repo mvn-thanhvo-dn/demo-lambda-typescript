@@ -7,13 +7,15 @@
     "build": "npm run build-ts && npm run lint",
     "build-ts": "rm -rf dist && tsc",
     "build-api": "npm run build-ts && npm run lint && npm run copy-dependencies && npm run install-dependencies",
+    "build-debug": "npm run build-ts && npm run lint-debug && npm run copy-dependencies && npm run install-dependencies",
     "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
+    "lint-debug": "tsc --noEmit --project tsconfig.json && tsc-alias -p tsconfig.json && eslint \"**/*.{js,ts}\" --quiet --fix",
     "start:sam": "sam local start-api --env-vars env.json --docker-network=boilerplate-lambda-typescript-local-network --skip-pull-image",
     "start:dev": "concurrently \"tsc --watch\" \"npm run start:sam\"",
     "install-dependencies": "cd dist/layers/dependencies/nodejs && npm i",
     "copy-dependencies": "cp -R src/layers/dependencies dist/layers/dependencies",
     "prepare": "husky install",
-    "debug": "npm run build-api && node dist/debug/index.js"
+    "debug": "npm run build-debug && node --no-warnings dist/debug/index.js"
   },
   "author": "",
   "license": "",
@@ -33,6 +35,7 @@
     "nodemon": "^2.0.20",
     "prettier": "2.7.1",
     "ts-node": "^10.9.1",
+    "tsc-alias": "^1.7.1",
     "tsconfig-paths": "^4.1.0",
     "typescript": "^4.8.4",
     "yaml": "^2.1.3"

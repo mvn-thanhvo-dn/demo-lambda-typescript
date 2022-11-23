@@ -1,18 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 import { APIGatewayProxyResult } from 'aws-lambda'
 
-// ------------------ import for debug ------------------
-// import { AppDataSource } from '../../layers/shared/nodejs/node_modules/models'
-// import { render } from '../../layers/shared/nodejs/node_modules/shared/utils/custom-response'
-// import {
-//   UserRepository,
-//   ProfileRepository
-// } from '../../layers/shared/nodejs/node_modules/models/repositories'
-// import { comparePassword } from '../../layers/shared/nodejs/node_modules/shared/utils/hash-password'
-// import { getAccessToken } from '../../layers/shared/nodejs/node_modules/shared/utils/jwt'
-// import { APIGatewayEventInterface } from '../../layers/shared/nodejs/node_modules/shared/interfaces'
-
-// ------------------ import for lambda ------------------
 import { AppDataSource } from 'models/index'
 import { render } from 'shared/utils/custom-response'
 import { UserRepository, ProfileRepository } from 'models/repositories'

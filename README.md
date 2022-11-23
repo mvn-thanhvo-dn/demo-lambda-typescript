@@ -13,10 +13,10 @@ npm i
 Run command
 
 ```bash
-cp example.env .env
+cp example.env .env && cp example.env.json env.json
 ```
 
-After, insert environment variables to .env and Global environment variables in file template.yml
+After, insert environment variables to .env and env.json
 
 ## Build and run with AWS SAM local
 
@@ -38,22 +38,8 @@ docker-compose up db
 npm run start:dev
 ```
 
-## Quick start with express for debug
+## Build and run debug with express
 
 ```bash
 npm run debug
-```
-
-## Step by step run debug with express
-
-1. Build source
-
-```bash
-npm run build-api
-```
-
-2. Start debug
-
-```bash
-node dist/debug/index.js
 ```

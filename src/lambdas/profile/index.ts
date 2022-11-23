@@ -2,15 +2,6 @@ import middy from '@middy/core'
 
 import { handleGetProfile, handleUpdateProfile, handleDeleteProfile } from './handlers'
 import { UpdateProfileDto } from './dtos'
-
-// ------------------ import for debug ------------------
-// import {
-//   connectDBMiddleware,
-//   validationMiddleware,
-//   authMiddleware,
-// } from '../../layers/shared/nodejs/node_modules/shared/middlewares'
-
-// ------------------ import for lambda ------------------
 import {
   connectDBMiddleware,
   validationMiddleware,

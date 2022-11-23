@@ -33,7 +33,7 @@ Object.values(Resources).forEach((value: any) => {
     data.push(result)
   }
 })
-Array.from(data).forEach(item => console.log(JSON.stringify(item)))
+Array.from(data).forEach((item) => console.log(JSON.stringify(item)))
 
 // create object includes list function handler
 const listFunction = {

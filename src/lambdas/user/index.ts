@@ -2,15 +2,6 @@ import middy from '@middy/core'
 
 import { handleRegisterUser, handleLogin, handleGetAllUsers } from './handlers'
 import { RegisterUserDto, LoginDto } from './dtos'
-
-// ------------------ import for debug ------------------
-// import {
-//   connectDBMiddleware,
-//   validationMiddleware,
-//   authMiddleware,
-// } from '../../layers/shared/nodejs/node_modules/shared/middlewares'
-
-// ------------------ import for lambda ------------------
 import {
   connectDBMiddleware,
   validationMiddleware,
