@@ -11,13 +11,13 @@ Globals:
       - !Ref LayerShared
     Environment:
       Variables:
-        DB_HOST: 116.105.73.129
-        DB_PORT: 5432
-        DB_USER: hana
-        DB_PASS: Hana08062001!
-        DB_NAME: demo_lambda_2
-        ACCESS_TOKEN_SECRET: hanahaha333
-        ACCESS_TOKEN_LIFE: 5m
+        DB_HOST: !Ref
+        DB_PORT: !Ref
+        DB_USER: !Ref
+        DB_PASS: !Ref
+        DB_NAME: !Ref
+        ACCESS_TOKEN_SECRET: !Ref
+        ACCESS_TOKEN_LIFE: !Ref
 Resources:
   api:
     Type: AWS::Serverless::Api

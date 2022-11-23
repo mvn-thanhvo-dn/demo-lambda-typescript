@@ -1,36 +1,32 @@
 import { StatusCodes } from 'http-status-codes'
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
-import { plainToInstance } from 'class-transformer'
-
-import { RegisterUserDto, LoginDto } from './dtos'
+import { APIGatewayProxyResult } from 'aws-lambda'
 
 // ------------------ import for debug ------------------
-import { AppDataSource } from '../../layers/shared/nodejs/node_modules/models'
-import { render } from '../../layers/shared/nodejs/node_modules/shared/utils/custom-response'
-import {
-  UserRepository,
-  ProfileRepository
-} from '../../layers/shared/nodejs/node_modules/models/repositories'
-import { comparePassword } from '../../layers/shared/nodejs/node_modules/shared/utils/hash-password'
-import { getAccessToken } from '../../layers/shared/nodejs/node_modules/shared/utils/jwt'
+// import { AppDataSource } from '../../layers/shared/nodejs/node_modules/models'
+// import { render } from '../../layers/shared/nodejs/node_modules/shared/utils/custom-response'
+// import {
+//   UserRepository,
+//   ProfileRepository
+// } from '../../layers/shared/nodejs/node_modules/models/repositories'
+// import { comparePassword } from '../../layers/shared/nodejs/node_modules/shared/utils/hash-password'
+// import { getAccessToken } from '../../layers/shared/nodejs/node_modules/shared/utils/jwt'
+// import { APIGatewayEventInterface } from '../../layers/shared/nodejs/node_modules/shared/interfaces'
 
 // ------------------ import for lambda ------------------
-// import { AppDataSource } from 'models/index'
-// import { render } from 'shared/utils/custom-response'
-// import { UserRepository, ProfileRepository } from 'models/repositories'
-// import { comparePassword } from 'shared/utils/hash-password'
-// import { getAccessToken } from 'shared/utils/jwt'
+import { AppDataSource } from 'models/index'
+import { render } from 'shared/utils/custom-response'
+import { UserRepository, ProfileRepository } from 'models/repositories'
+import { comparePassword } from 'shared/utils/hash-password'
+import { getAccessToken } from 'shared/utils/jwt'
+import { APIGatewayEventInterface } from 'shared/interfaces'
 
 const userRepository = new UserRepository()
 const profileRepository = new ProfileRepository()
 
 export const handleRegisterUser = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayEventInterface
 ): Promise<APIGatewayProxyResult> => {
-  const { email, password, name, age } = plainToInstance(
-    RegisterUserDto,
-    JSON.parse(event.body)
-  )
+  const { email, password, name, age } = event.jsonBody
   const queryRunner = AppDataSource.createQueryRunner()
   queryRunner.connect()
   try {
@@ -53,13 +49,10 @@ export const handleRegisterUser = async (
 }
 
 export const handleLogin = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayEventInterface
 ): Promise<APIGatewayProxyResult> => {
   try {
-    const { email, password } = plainToInstance(
-      LoginDto,
-      JSON.parse(event.body)
-    )
+    const { email, password } = event.jsonBody
     const user = await userRepository.findOne({
       where: { email },
       relations: { profile: true }

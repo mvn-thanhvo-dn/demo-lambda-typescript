@@ -35,7 +35,7 @@ docker-compose up db
 3. Start sam local
 
 ```bash
-npm run start:sam
+npm run start:dev
 ```
 
 ## Quick start with express for debug

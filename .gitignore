@@ -134,3 +134,4 @@ data/
 ./packaged.yaml
 env/
 dist
+env.json

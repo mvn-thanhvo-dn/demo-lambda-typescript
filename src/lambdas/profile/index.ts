@@ -4,18 +4,18 @@ import { handleGetProfile, handleUpdateProfile, handleDeleteProfile } from './ha
 import { UpdateProfileDto } from './dtos'
 
 // ------------------ import for debug ------------------
-import {
-  connectDBMiddleware,
-  validationMiddleware,
-  authMiddleware,
-} from '../../layers/shared/nodejs/node_modules/shared/middlewares'
-
-// ------------------ import for lambda ------------------
 // import {
 //   connectDBMiddleware,
 //   validationMiddleware,
 //   authMiddleware,
-// } from 'shared/middlewares'
+// } from '../../layers/shared/nodejs/node_modules/shared/middlewares'
+
+// ------------------ import for lambda ------------------
+import {
+  connectDBMiddleware,
+  validationMiddleware,
+  authMiddleware,
+} from 'shared/middlewares'
 
 export const getProfile = middy(handleGetProfile)
   .use(authMiddleware())
