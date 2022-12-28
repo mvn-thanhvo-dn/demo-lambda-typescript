@@ -135,3 +135,4 @@ data/
 env/
 dist
 env.json
+package-lock.json

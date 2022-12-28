@@ -1,11 +1,15 @@
 import middy from '@middy/core'
 
-import { handleGetProfile, handleUpdateProfile, handleDeleteProfile } from './handlers'
+import {
+  handleGetProfile,
+  handleUpdateProfile,
+  handleDeleteProfile
+} from './handlers'
 import { UpdateProfileDto } from './dtos'
 import {
   connectDBMiddleware,
   validationMiddleware,
-  authMiddleware,
+  authMiddleware
 } from 'shared/middlewares'
 
 export const getProfile = middy(handleGetProfile)
@@ -13,7 +17,7 @@ export const getProfile = middy(handleGetProfile)
   .use(connectDBMiddleware())
 
 export const updateProfile = middy(handleUpdateProfile)
-.use(authMiddleware())
+  .use(authMiddleware())
   .use(validationMiddleware(UpdateProfileDto))
   .use(connectDBMiddleware())
 

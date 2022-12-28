@@ -133,6 +133,60 @@ Resources:
             RestApiId: !Ref api
             Path: /profile
             Method: DELETE
+  FunctionTest1:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.test
+      Runtime: nodejs16.x
+      CodeUri: dist/lambdas
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Tracing: Active
+      Events:
+        getEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref api
+            Path: /test1/{id}
+            Method: GET
+  FunctionTestParams:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.index
+      Runtime: nodejs16.x
+      CodeUri: dist/lambdas
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Tracing: Active
+      Events:
+        getEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref api
+            Path: /test/{id}
+            Method: ANY
+  FunctionTest:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.index
+      Runtime: nodejs16.x
+      CodeUri: dist/lambdas
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambda_ReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Tracing: Active
+      Events:
+        getEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref api
+            Path: /test
+            Method: ANY
   LayerNodeModules:
     Type: AWS::Serverless::LayerVersion
     Properties:

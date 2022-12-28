@@ -43,3 +43,17 @@ npm run start:dev
 ```bash
 npm run debug
 ```
+
+## Dependence for debug
+
+```bash
+express
+@types/express
+http-errors
+@types/http-errors
+morgan
+@types/morgan
+tsc-alias
+tsconfig-paths
+yaml
+```
