@@ -5,22 +5,120 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+
+// ------------ Start parse template file ------------
+import fs from 'fs'
+
+const { Resources } = JSON.parse(
+  fs.readFileSync(
+    __dirname + '/../../cdk.out/IndexCdkStack.template.json',
+    'utf8'
+  )
+)
+const data: Array<{
+  handler: string
+  route: string
+  method: string
+}> = []
+const data1: string[] = []
+const resourcesValues = Object.values(Resources)
+resourcesValues
+  .filter((item: any) => item.Type === 'AWS::ApiGateway::Deployment')
+  .forEach((value: any) => {
+    Array.from(value.DependsOn).forEach((id: string) => {
+      data1.push(id)
+    })
+  })
+const realRoute: Array<{
+  id: string
+  parentId: string
+  path: string
+  restApiId: string
+}> = []
+const methods: Array<{
+  id: string
+  method: string
+  resourceId: string
+  handlerId: string
+}> = []
+
+data1.forEach((item) => {
+  const t = Resources[item]
+  if (t.Type === 'AWS::ApiGateway::Resource') {
+    realRoute.push({
+      id: item,
+      parentId: t.Properties.ParentId?.Ref || '',
+      path: t.Properties.PathPart,
+      restApiId: t.Properties.RestApiId.Ref
+    })
+  }
+  if (t.Type === 'AWS::ApiGateway::Method') {
+    const temp = t.Properties.Integration.Uri['Fn::Join'][1]
+    methods.push({
+      id: item,
+      method: t.Properties.HttpMethod,
+      resourceId: t.Properties.ResourceId.Ref,
+      handlerId: temp[temp.length - 2]['Fn::GetAtt'][0]
+    })
+  }
+})
+
+const realRoute1 = realRoute.map((route) => {
+  const temp = methods
+    .filter((method) => method.resourceId === route.id)
+    .map((item) => ({ method: item.method, handlerId: item.handlerId }))
+  let method = temp[0].method
+  if (temp.length > 1) {
+    method = 'ANY'
+  }
+  return { ...route, method, handlerId: temp[0].handlerId }
+})
+
+const vip = realRoute1.map((route) => {
+  if (route.parentId) {
+    const temp = realRoute1.find((item) => item.id === route.parentId)
+    route.path = temp.path + '/' + route.path
+  }
+  route.path = '/' + route.path
+  return route
+})
+
+const resourcesKeys = Object.keys(Resources)
+const handlers: { id?: string; handler?: string }[] = []
+resourcesKeys.forEach((key: string) => {
+  const item = Resources[key]
+  const result: { id?: string; handler?: string } = {}
+  if (item.Type === 'AWS::Lambda::Function') {
+    result.id = key
+    result.handler = item.Properties.Handler
+    handlers.push(result)
+  }
+})
+
+vip.forEach((vipItem) => {
+  const handler = handlers.find((item) => item.id === vipItem.handlerId)
+  data.push({
+    route: vipItem.path,
+    handler: handler.handler.split('.')[1],
+    method: vipItem.method
+  })
+})
+
+console.log(data)
+
+// ------------ End parse template file ------------
+
+// ------------ Start init express ------------
 import 'dotenv/config'
 import express, { Request, Response, NextFunction } from 'express'
 import { APIGatewayProxyEvent } from 'aws-lambda'
 import { StatusCodes } from 'http-status-codes'
 import createHttpError from 'http-errors'
 import morgan from 'morgan'
-import YAML from 'yaml'
-import fs from 'fs'
 
-import { registerUser, login, getAllUsers } from '../lambdas/user/index'
-import {
-  getProfile,
-  updateProfile,
-  deleteProfile
-} from '../lambdas/profile/index'
-import { index, test } from '../lambdas'
+// import handler function here
+// ...
+// import handler function here
 
 const app = express()
 const port = +process.env.EXPRESS_PORT || 3001
@@ -30,44 +128,9 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(morgan('dev'))
 
-// ------------ get data includes HANDLER, ROUTE, METHOD from template.yml ------------
-// use it with template.yml
-const { Resources } = YAML.parse(
-  fs.readFileSync(__dirname + '/../../template.yml', 'utf8')
-)
-const data: Array<{ handler: string; route: string; method: string }> = []
-Object.values(Resources).forEach((value: any) => {
-  if (value.Type === 'AWS::Serverless::Function') {
-    const result = { handler: '', route: '', method: '' }
-    result.handler = value.Properties.Handler.split('.')[1]
-    const properties = value.Properties.Events.getEndpoint.Properties
-
-    const regex = /{(?=\d.*)?([\w\-]*)}/
-    const path = String(properties.Path)
-    const expression = path.match(regex)
-    if (expression !== null) {
-      result.route = path.replace(expression[0], `:${expression[1]}`)
-    } else {
-      result.route = path
-    }
-
-    result.method = properties.Method.toLowerCase()
-    data.push(result)
-  }
-})
-Array.from(data).forEach((item) => console.log(JSON.stringify(item)))
-
 // ------------ create object includes list function handler ------------
-const listFunction = {
-  registerUser,
-  login,
-  getAllUsers,
-  getProfile,
-  updateProfile,
-  deleteProfile,
-  index,
-  test
-}
+const listFunction = {}
+
 
 // ------------ function convert header of request from express to AWS lambda ------------
 const convertHeaders = (name: string) => {
